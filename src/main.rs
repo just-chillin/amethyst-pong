@@ -1,4 +1,9 @@
+mod pong;
+
+use crate::pong::Pong;
+
 use amethyst::{
+    core::transform::TransformBundle,
     prelude::*,
     renderer::{
         plugins::{RenderFlat2D, RenderToWindow},
@@ -8,10 +13,6 @@ use amethyst::{
     utils::application_root_dir,
 };
 
-pub struct Pong;
-
-impl SimpleState for Pong {}
-
 fn main() -> amethyst::Result<()> {
     amethyst::start_logger(Default::default());
 
@@ -19,12 +20,15 @@ fn main() -> amethyst::Result<()> {
     let display_config = app_root.join("config/display.ron");
     let assets = app_root.join("assets");
 
-    let game_data = GameDataBuilder::default().with_bundle(
-        RenderingBundle::<DefaultBackend>::new()
-            .with_plugin(RenderToWindow::from_config_path(display_config)?.with_clear([0, 0, 0, 1]))
-            .with_plugin(RenderFlat2D::default()),
-    )?;
-    
+    let game_data = GameDataBuilder::default()
+        .with_bundle(
+            RenderingBundle::<DefaultBackend>::new()
+                .with_plugin(
+                    RenderToWindow::from_config_path(display_config)?.with_clear([0, 0, 0, 1]),
+                )
+                .with_plugin(RenderFlat2D::default()),
+        )?
+        .with_bundle(TransformBundle::new())?;
     let mut game = Application::new(assets, Pong, game_data)?; // amethyst root object
 
     game.run();
